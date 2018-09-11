@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>swiper</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul,
+    li {
+        list-style: none;
+    }
+
+    .wrap {
+        position: relative;
+        width: 500px;
+        height: 300px;
+        margin: 100px auto;
+        background: #e5e5e5;
+        overflow: hidden;
+    }
+
+    .imgWrap {
+        position: relative;
+        /* width: 3000px; */
+        height: 300px;
+        padding: 10px
+    }
+
+    .imgWrap li {
+        float: left;
+        box-sizing: border-box;
+        width: 480px;
+        height: 280px;
+        margin-right: 10px;
+    }
+
+    .imgWrap li img {
+        width: 480px;
+        height: 280px;
+    }
+
+    .btnWrap {
+        position: absolute;
+        /* width: 130px; */
+        height: 10px;
+        top: 270px;
+        left: 50%;
+        transform: translateX(-50%)
+    }
+
+    .btnWrap li {
+        float: left;
+        margin-right: 20px;
+        border-radius: 50%;
+        width: 10px;
+        height: 10px;
+        background-color: #333;
+        opacity: .5;
+    }
+
+    .btnWrap li:last-of-type {
+        margin-right: 0px !important;
+    }
+    
+    .btnWrap .active {
+        background: rgb(0, 119, 255)
+    }
+</style>
+
+<body>
+    <div id='wrap' class='wrap'>
+        <ul id='imgWrap' class='imgWrap'>
+            <li><img src="./img/1.jpg" alt=""></li>
+            <li><img src="./img/2.jpg" alt=""></li>
+            <li><img src="./img/3.jpg" alt=""></li>
+            <li><img src="./img/4.jpg" alt=""></li>
+            <li><img src="./img/5.jpg" alt=""></li>
+            <li><img src="./img/1.jpg" alt=""></li>
+        </ul>
+        <ul id='btnWrap' class='btnWrap'>
+            <!-- <li class='active'></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li> -->
+        </ul>
+    </div>
+    <script src="./jquery-1.12.4.js"></script>
+    <script>
+        //定义一个变化的数值进行交互效果，值对应为当前的图片index
+        var imgIndex = 0;//初始值为0
+        var imgs = $('#imgWrap li');
+        var imgsw
+        var timer1;
+        var timer2;
+        var timer3;
+        var imgWrap = $('#imgWrap');
+        var btnWrap = $('#btnWrap');
+        //设置轮播图外层总长度
+        var imgWrapwidth = imgs.width()*imgs.length+20*imgs.length;
+        imgWrap.css('width',imgWrapwidth);
+        //设置按钮
+        var btnHtml = ''
+        for(var i=0;i<imgs.length-1;i++){
+            btnHtml+='<li></li>'
+        }
+        btnWrap.html(btnHtml)
+
+        var isClick = false;//按钮的点击状态，一开始为未点击
+        zidong();
+        var btns = $('#btnWrap li');
+        $(btns[0]).addClass('active');
+        var btnWrapWidth = btns.width()*btns.length+20*btns.length-20;
+        btnWrap.css('width', btnWrapWidth);
+        console.log(btnWrapWidth);
+        //设置按钮外层的总长度
+
+        for (var i = 0; i < btns.length; i++) {
+             var btn = btns[i];
+             console.log(btn)
+            //手动切换
+            $(btn).click(function () {
+                if(!isClick){//若为点击状态时，禁止按钮被多次点击造成动画紊乱
+                    isClick = true;//点击一次置为已点击状态
+                    clearInterval(timer1);
+                    clearTimeout(timer2);
+                    clearTimeout(timer3);
+                    $(this).addClass('active').siblings().removeClass('active');
+                    timer2 = setTimeout(() => {
+                        zidong();
+                        isClick = false;//点击过1s后重置为未点击状态
+                    }, 1000);
+                    imgIndex = $(this).index();
+                    console.log(imgIndex);
+                    imgWrap.animate({ 'left': -imgIndex * 490 }, 800);
+                }
+            })
+        }
+
+        function zidong() {
+            timer1 = setInterval(function () {
+                imgIndex++
+                if (imgIndex < 6) {
+                    console.log('zidong')
+                    imgWrap.animate({ 'left': -imgIndex * 490 }, 800)
+                    $(btns[imgIndex]).addClass('active').siblings().removeClass('active');
+                }
+                if (imgIndex == 5) {
+                    imgIndex = 0;
+                    $(btns[imgIndex]).addClass('active').siblings().removeClass('active');
+                    timer3 = setTimeout(() => {
+                        //在最后的图片切换动画完成后的极短时间里变成第一张
+                        //动画时间为800，所以相差10ms，肉眼不可察觉
+                        imgWrap.css({ 'left': -imgIndex * 490 }); 
+                    }, 810);
+                }
+            }, 1500)
+        }
+
+    </script>
+</body>
+
+</html>
